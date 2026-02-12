@@ -20,12 +20,13 @@ export const todos = pgTable("todos", {
   content: text("content").notNull(),
   isCompleted: boolean("is_completed").default(false).notNull(),
   userId: integer("user_id")
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
-    .notNull()
-    .$onUpdate(() => new Date()),
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
