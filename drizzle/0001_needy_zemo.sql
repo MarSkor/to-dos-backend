@@ -1,0 +1,1 @@
+ALTER TABLE "todos" ADD COLUMN "updated_at" timestamp NOT NULL;
