@@ -9,19 +9,23 @@ router.get("/", async (req, res) => {
   try {
     const { filter, page = 1, limit = 10 } = req.query;
 
+    if (process.env.NODE_ENV === "production") {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const TEST_USER_ID = 2;
 
-    const pageNum = Math.max(1, parseInt(page));
-    const limitNum = Math.max(1, parseInt(limit));
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, Math.min(parseInt(limit, 10) || 10, 100));
     const offset = (pageNum - 1) * limitNum;
 
     const whereConditions = [];
 
     whereConditions.push(eq(todos.userId, TEST_USER_ID));
 
-    //  if (req.user?.id) {
-    //     whereConditions.push(eq(todos.userId, req.user.id));
-    // }
+    if (req.user?.id) {
+      whereConditions.push(eq(todos.userId, req.user.id));
+    }
 
     if (filter === "completed") {
       whereConditions.push(eq(todos.isCompleted, true));
