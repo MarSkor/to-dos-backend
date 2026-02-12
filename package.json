@@ -7,8 +7,8 @@
     "dev": "node --watch src/index.js",
     "build": "jsc",
     "start": "node dist/server.js",
-    "drizzle-generate": "npx drizzle-kit generate",
-    "drizzle-migrate": "npx drizzle-kit migrate"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   },
   "keywords": [],
   "author": "",
@@ -17,8 +17,10 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "dotenv": "^17.2.4",
-    "drizzle-kit": "^0.31.9",
     "drizzle-orm": "^0.45.1",
     "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.9"
   }
 }
