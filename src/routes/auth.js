@@ -14,7 +14,10 @@ const router = express.Router();
 router.post(
   "/register",
   [
-    body("email").isEmail().withMessage("Invalid email.").normalizeEmail(),
+    body("email")
+      .isEmail()
+      .withMessage("Invalid email format.")
+      .normalizeEmail(),
     body("password")
       .isLength({ min: 8 })
       .withMessage("Password must be at least 8 characters long.")
@@ -28,7 +31,10 @@ router.post(
 router.post(
   "/login",
   [
-    body("email").isEmail().withMessage("Invalid email format"),
+    body("email")
+      .isEmail()
+      .withMessage("Invalid email format.")
+      .normalizeEmail(),
     body("password").notEmpty().withMessage("Password is required"),
   ],
   validate,

@@ -72,15 +72,28 @@ export const loginUser = async (req, res) => {
 };
 
 export const logOutUser = (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+  });
   res.json({ message: "User is logged out." });
 };
 
 export const getMe = async (req, res) => {
-  const [user] = await db
-    .select({ id: users.id, email: users.email })
-    .from(users)
-    .where(eq(users.id, req.user.id));
+  try {
+    const [user] = await db
+      .select({ id: users.id, email: users.email })
+      .from(users)
+      .where(eq(users.id, req.user.id));
 
-  res.json(user);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json(user);
+  } catch (error) {
+    console.error("getMe error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 };
