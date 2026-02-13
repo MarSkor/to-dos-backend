@@ -1,29 +1,33 @@
 import express from "express";
-import todosRouter from "./routes/todos.js";
+import cookieParser from "cookie-parser";
 import cors from "cors";
+import todosRouter from "./routes/todos.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 
 const PORT = 3000;
 
 if (!process.env.FRONTEND_URL) {
-  console.warn(
-    "Warning: FRONTEND_URL not set. CORS origin will be restrictive.",
-  );
+  console.warn("Warning: FRONTEND_URL not set.");
 }
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || false,
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
 );
 
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/api/auth", authRouter);
 app.use("/api/todos", todosRouter);
 
 app.get("/", (req, res) => {
-  res.send("Hello, welcome to the to-do API");
+  res.send("TODO API is running");
 });
 
 app.listen(PORT, () => {
