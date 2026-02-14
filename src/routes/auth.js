@@ -8,8 +8,16 @@ import {
   logOutUser,
   registerUser,
 } from "../controllers/authController.js";
+import { authLimiter } from "../config/arcjet.js";
 
 const router = express.Router();
+
+const rateLimitLogin = async (req, res, next) => {
+  const decision = await authLimiter.protect(req);
+  if (decision.isDenied())
+    return res.status(429).json({ error: "Too many login attempts" });
+  next();
+};
 
 router.post(
   "/register",
@@ -24,6 +32,7 @@ router.post(
       .matches(/\d/)
       .withMessage("Password must contain a number"),
   ],
+  rateLimitLogin,
   validate,
   registerUser,
 );
@@ -37,6 +46,7 @@ router.post(
       .normalizeEmail(),
     body("password").notEmpty().withMessage("Password is required"),
   ],
+  rateLimitLogin,
   validate,
   loginUser,
 );

@@ -27,7 +27,8 @@ export const todos = pgTable("todos", {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-});
+  position: integer("position").default(0),
+}).enableRLS();
 
 export const usersRelations = relations(users, ({ many }) => ({
   todos: many(todos),

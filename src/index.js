@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import todosRouter from "./routes/todos.js";
 import authRouter from "./routes/auth.js";
+import securityMiddleware from "./middleware/security.js";
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(securityMiddleware);
 
 app.use("/api/auth", authRouter);
 app.use("/api/todos", todosRouter);
