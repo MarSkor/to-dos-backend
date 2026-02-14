@@ -18,7 +18,7 @@ export const users = pgTable("users", {
 export const todos = pgTable("todos", {
   id: serial("id").primaryKey(),
   content: text("content").notNull(),
-  isCompleted: boolean("is_completed").default(false).notNull(),
+  isComplete: boolean("is_complete").default(false).notNull(),
   userId: integer("user_id")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
@@ -27,6 +27,7 @@ export const todos = pgTable("todos", {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
+  position: integer("position").default(0),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
