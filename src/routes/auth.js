@@ -13,10 +13,16 @@ import { authLimiter } from "../config/arcjet.js";
 const router = express.Router();
 
 const rateLimitLogin = async (req, res, next) => {
-  const decision = await authLimiter.protect(req);
-  if (decision.isDenied())
-    return res.status(429).json({ error: "Too many login attempts" });
-  next();
+  if (process.env.NODE_ENV === "test") return next();
+  try {
+    const decision = await authLimiter.protect(req);
+    if (decision.isDenied())
+      return res.status(429).json({ error: "Too many login attempts" });
+    next();
+  } catch (error) {
+    console.error("Arcjet rate limit error: ", error);
+    return res.status(500).json({ error: "Internal error" });
+  }
 };
 
 router.post(

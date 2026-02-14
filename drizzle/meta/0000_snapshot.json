@@ -1,5 +1,5 @@
 {
-  "id": "aca78171-7e69-4bfc-93c6-b9f51c833d93",
+  "id": "cd0a5523-28fd-4174-aa7b-0a9798667463",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -20,8 +20,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "is_completed": {
-          "name": "is_completed",
+        "is_complete": {
+          "name": "is_complete",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
@@ -37,14 +37,22 @@
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": true
+          "notNull": true,
+          "default": "now()"
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
         }
       },
       "indexes": {},
@@ -59,7 +67,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

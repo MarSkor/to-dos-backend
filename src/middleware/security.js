@@ -27,8 +27,13 @@ const securityMiddleware = async (req, res, next) => {
       });
     }
 
+    if (decision.isDenied()) {
+      return res.status(403).json({
+        error: "Forbidden",
+        message: "Request blocked.",
+      });
+    }
     req.arcjet = decision;
-
     next();
   } catch (error) {
     console.error("Arcjet middleware error: ", error);

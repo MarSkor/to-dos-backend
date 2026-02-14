@@ -15,9 +15,9 @@ const getTodos = async (req, res) => {
     const whereConditions = [eq(todos.userId, userId)];
 
     if (filter === "completed") {
-      whereConditions.push(eq(todos.isCompleted, true));
+      whereConditions.push(eq(todos.isComplete, true));
     } else if (filter === "active") {
-      whereConditions.push(eq(todos.isCompleted, false));
+      whereConditions.push(eq(todos.isComplete, false));
     }
 
     const results = await db
