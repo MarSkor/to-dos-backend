@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "dev": "node --watch src/index.js",
-    "build": "jsc",
-    "start": "node dist/server.js",
+    "build": "echo 'No build step necessary'",
+    "start": "node src/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"
   },
