@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import authenticate from "../middleware/auth.js";
 import validate from "../middleware/validate.js";
 import {
+  deleteMe,
   getMe,
   loginUser,
   logOutUser,
@@ -12,6 +13,20 @@ import { authLimiter } from "../config/arcjet.js";
 
 const router = express.Router();
 
+const registerValidation = [
+  body("email").isEmail().withMessage("Invalid email format.").normalizeEmail(),
+  body("password")
+    .isLength({ min: 8 })
+    .withMessage("Password must be at least 8 characters long.")
+    .matches(/\d/)
+    .withMessage("Password must contain a number"),
+];
+
+const loginValidation = [
+  body("email").isEmail().withMessage("Invalid email format.").normalizeEmail(),
+  body("password").notEmpty().withMessage("Password is required"),
+];
+
 const rateLimitLogin = async (req, res, next) => {
   if (process.env.NODE_ENV === "test") return next();
   try {
@@ -20,45 +35,21 @@ const rateLimitLogin = async (req, res, next) => {
       return res.status(429).json({ error: "Too many login attempts" });
     next();
   } catch (error) {
-    console.error("Arcjet rate limit error: ", error);
+    console.error("Rate limit error: ", error);
     return res.status(500).json({ error: "Internal error" });
   }
 };
 
 router.post(
   "/register",
-  [
-    body("email")
-      .isEmail()
-      .withMessage("Invalid email format.")
-      .normalizeEmail(),
-    body("password")
-      .isLength({ min: 8 })
-      .withMessage("Password must be at least 8 characters long.")
-      .matches(/\d/)
-      .withMessage("Password must contain a number"),
-  ],
+  registerValidation,
   rateLimitLogin,
   validate,
   registerUser,
 );
-
-router.post(
-  "/login",
-  [
-    body("email")
-      .isEmail()
-      .withMessage("Invalid email format.")
-      .normalizeEmail(),
-    body("password").notEmpty().withMessage("Password is required"),
-  ],
-  rateLimitLogin,
-  validate,
-  loginUser,
-);
-
+router.post("/login", loginValidation, rateLimitLogin, validate, loginUser);
 router.post("/logout", logOutUser);
-
 router.get("/me", authenticate, getMe);
+router.delete("/me", authenticate, deleteMe);
 
 export default router;
