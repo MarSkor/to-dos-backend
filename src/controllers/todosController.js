@@ -99,10 +99,14 @@ export const deleteTodo = async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    await db
+    const [deleted] = await db
       .delete(todos)
-      .where(and(eq(todos.id, id), eq(todos.userId, userId)));
+      .where(and(eq(todos.id, id), eq(todos.userId, userId)))
+      .returning({ id: todos.id });
 
+    if (!deleted) {
+      return res.status(404).json({ error: "Todo not found" });
+    }
     res.status(204).send();
   } catch (error) {
     // console.error(`DELETE /todos error: ${error}`);

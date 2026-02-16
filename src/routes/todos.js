@@ -7,7 +7,7 @@ import {
   editTodo,
   deleteCompletedTodos,
 } from "../controllers/todosController.js";
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 import validate from "../middleware/validate.js";
 
 const createTodoValidation = [
@@ -20,6 +20,16 @@ const createTodoValidation = [
 ];
 
 const updateTodoValidation = [
+  param("id")
+    .isInt({ min: 1 })
+    .withMessage("Todo id must be a positive integer.")
+    .toInt(),
+  body().custom((_, { req }) => {
+    if (req.body.content === undefined && req.body.isComplete === undefined) {
+      throw new Error("At least one of content or isComplete is required.");
+    }
+    return true;
+  }),
   body("content")
     .optional()
     .trim()
@@ -33,12 +43,19 @@ const updateTodoValidation = [
     .withMessage("isComplete must be a boolean."),
 ];
 
+const deleteTodoValidation = [
+  param("id")
+    .isInt({ min: 1 })
+    .withMessage("Todo id must be a positive integer.")
+    .toInt(),
+];
+
 const router = express.Router();
 
 router.get("/", authenticate, getTodos);
 router.post("/", authenticate, createTodoValidation, validate, createTodo);
 router.patch("/:id", authenticate, updateTodoValidation, validate, editTodo);
 router.delete("/completed", authenticate, deleteCompletedTodos);
-router.delete("/:id", authenticate, deleteTodo);
+router.delete("/:id", authenticate, deleteTodoValidation, validate, deleteTodo);
 
 export default router;

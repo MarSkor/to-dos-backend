@@ -101,7 +101,13 @@ export const getMe = async (req, res) => {
 export const deleteMe = async (req, res) => {
   try {
     const userId = req.user.id;
-    await db.delete(users).where(eq(users.id, userId));
+    const [deleted] = await db
+      .delete(users)
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+    if (!deleted) {
+      return res.status(404).json({ error: "User not found" });
+    }
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
