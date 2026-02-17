@@ -2,6 +2,8 @@ import { and, desc, eq, sql } from "drizzle-orm";
 import { db } from "../db/index.js";
 import { todos } from "../db/schema/app.js";
 
+const TODO_LIMIT = 40;
+
 export const getTodos = async (req, res) => {
   try {
     const { filter, page = 1, limit = 10 } = req.query;
@@ -52,6 +54,18 @@ export const createTodo = async (req, res) => {
   try {
     const { content } = req.body;
     const userId = req.user.id;
+
+    const [{ count }] = await db
+      .select({ count: sql`count(*)` })
+      .from(todos)
+      .where(eq(todos.userId, userId));
+
+    if (Number(count) >= TODO_LIMIT) {
+      return res.status(403).json({
+        error: "Limit Reached",
+        message: `You cannot have more than ${TODO_LIMIT} active tasks.`,
+      });
+    }
 
     const [newTodo] = await db
       .insert(todos)
