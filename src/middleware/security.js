@@ -3,6 +3,10 @@ import aj from "../config/arcjet.js";
 const securityMiddleware = async (req, res, next) => {
   if (process.env.NODE_ENV === "test") return next();
 
+  if (req.method === "OPTIONS") {
+    return next();
+  }
+
   try {
     const decision = await aj.protect(req);
 
