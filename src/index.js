@@ -9,8 +9,9 @@ import authRouter from "./routes/auth.js";
 import securityMiddleware from "./middleware/security.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 if (!process.env.FRONTEND_URL) {
   console.warn("Warning: FRONTEND_URL not set.");
